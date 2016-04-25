@@ -8,6 +8,7 @@ import org.apache.cassandra.db.composites.CellNames
 import org.apache.cassandra.db.marshal.{ AbstractType, CompositeType, TypeParser, UTF8Type }
 import org.apache.cassandra.db.{ ColumnFamilyType, Keyspace, SystemKeyspace }
 import org.apache.cassandra.io.sstable.SSTableLoader
+import org.apache.cassandra.schema.LegacySchemaTables
 import org.apache.cassandra.streaming.StreamConnectionFactory
 import org.apache.cassandra.tools.BulkLoadConnectionFactory
 
@@ -26,7 +27,7 @@ class SparkCassSSTableLoaderClient(
 ) extends SSTableLoader.Client {
   import SparkCassSSTableLoaderClient._
 
-  private[client] val tables: mutable.Map[TableIdentifier, CFMetaData] = mutable.HashMap.empty[TableIdentifier, CFMetaData]
+  private[client] val tables: mutable.Map[String, CFMetaData] = mutable.HashMap.empty[String, CFMetaData]
 
   override def init(keyspace: String): Unit = {
     val cluster = session.getCluster
@@ -61,8 +62,12 @@ class SparkCassSSTableLoaderClient(
     }
   }
 
-  override def getCFMetaData(keyspace: String, cfName: String): CFMetaData = {
-    tables(TableIdentifier(keyspace, cfName))
+  override def getTableMetadata(tableName: String): CFMetaData = {
+    tables(tableName)
+  }
+
+  override def setTableMetadata(cfm: CFMetaData): Unit = {
+    tables.put(cfm.cfName, cfm)
   }
 
   override def getConnectionFactory: StreamConnectionFactory = {
@@ -74,28 +79,11 @@ class SparkCassSSTableLoaderClient(
     )
   }
 
-  private def getCFColumnsWithoutCollections: List[String] = {
-    val allColumns = CFMetaData.SchemaColumnFamiliesCf.allColumnsInSelectOrder.asScala
-
-    allColumns
-      .filter(columnDefinition => !columnDefinition.`type`.isCollection)
-      .map(columnDefinition => UTF8Type.instance.getString(columnDefinition.name.bytes))
-      .toList
-  }
-
   private def fetchCFMetaData(keyspace: String): Unit = {
-    def makeRawAbstractType(comparator: AbstractType[_], subComparator: AbstractType[_]): AbstractType[_] = {
-      if (subComparator == null) {
-        comparator
-      } else {
-        CompositeType.getInstance(List[AbstractType[_]](comparator, subComparator).asJava)
-      }
-    }
-
-    val selectColumns = getCFColumnsWithoutCollections
+    val selectColumns = List("columnfamily_name", "cf_id", "type", "comparator", "subcomparator", "is_dense")
 
     val queryStatement = QueryBuilder.select(selectColumns: _*)
-      .from(Keyspace.SYSTEM_KS, SystemKeyspace.SCHEMA_COLUMNFAMILIES_CF)
+      .from(SystemKeyspace.NAME, LegacySchemaTables.COLUMNFAMILIES)
       .where(QueryBuilder.eq("keyspace_name", keyspace))
       .setConsistencyLevel(ConsistencyLevel.ONE)
 
@@ -112,15 +100,13 @@ class SparkCassSSTableLoaderClient(
           TypeParser.parse(cfMetaDataRow.getString("subcomparator"))
       }
       val cfIsDense = cfMetaDataRow.getBool("is_dense")
-      val cfComparator = CellNames.fromAbstractType(makeRawAbstractType(cfRawComparator, cfSubComparator), cfIsDense)
+      val cfComparator = CellNames.fromAbstractType(CFMetaData.makeRawAbstractType(cfRawComparator, cfSubComparator), cfIsDense)
 
-      tables.put(TableIdentifier(keyspace, cfName), new CFMetaData(keyspace, cfName, cfType, cfComparator, cfId))
+      tables.put(cfName, new CFMetaData(keyspace, cfName, cfType, cfComparator, cfId))
     }
   }
 }
 
 object SparkCassSSTableLoaderClient {
   type TokenRange = org.apache.cassandra.dht.Range[org.apache.cassandra.dht.Token]
-
-  case class TableIdentifier(keyspace: String, cfName: String)
 }

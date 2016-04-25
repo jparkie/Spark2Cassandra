@@ -45,7 +45,7 @@ class SparkCassSSTableLoaderClientSpec extends WordSpec with MustMatchers with C
         testSparkCassSSTableLoaderClient.init(testKeyspace)
 
         assert(testSparkCassSSTableLoaderClient.tables
-          .contains(SparkCassSSTableLoaderClient.TableIdentifier(testKeyspace, testTable)))
+          .contains(testTable))
       }
     }
 
@@ -57,7 +57,7 @@ class SparkCassSSTableLoaderClientSpec extends WordSpec with MustMatchers with C
 
         testSparkCassSSTableLoaderClient.init(testKeyspace)
 
-        val outputCFMetaData = testSparkCassSSTableLoaderClient.getCFMetaData(testKeyspace, testTable)
+        val outputCFMetaData = testSparkCassSSTableLoaderClient.getTableMetadata(testTable)
         outputCFMetaData.ksName mustEqual testKeyspace
         outputCFMetaData.cfName mustEqual testTable
       }

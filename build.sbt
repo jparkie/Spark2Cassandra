@@ -24,13 +24,16 @@ crossScalaVersions := Seq("2.10.6", "2.11.7")
   * Library Dependencies:
   */
 
+// Exclusion Rules
+val slf4jLog4j12Rule = ExclusionRule("org.slf4j", "slf4j-log4j12")
+
 // Versions:
 val SparkVersion                   = "1.5.2"
 val SparkTestVersion               = "1.5.2_0.3.0"
 val ScalaTestVersion               = "2.2.4"
 val SparkCassandraConnectorVersion = "1.5.0"
-val CassandraAllVersion            = "2.1.13"
-val CassandraUnitVersion           = "2.1.9.2"
+val CassandraAllVersion            = "2.2.5"
+val CassandraUnitVersion           = "2.2.2.1"
 
 // Dependencies:
 val sparkCore       = "org.apache.spark"     %% "spark-core"                % SparkVersion                   % "provided"
@@ -43,6 +46,7 @@ val cassandraClient = "org.apache.cassandra" %  "cassandra-clientutil"      % Ca
 val cassandraUnit   = "org.cassandraunit"    %  "cassandra-unit"            % CassandraUnitVersion           % "test"
 
 libraryDependencies ++= Seq(sparkCore, sparkSql, sparkTest, scalaTest, ssc, cassandraAll, cassandraUnit)
+  .map(_ excludeAll slf4jLog4j12Rule)
 
 // Force cassandraUnit and ssc to utilize cassandraAll, cassandraClient.
 dependencyOverrides ++= Set(cassandraAll, cassandraClient)
