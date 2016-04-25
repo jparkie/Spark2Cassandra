@@ -17,13 +17,13 @@ Spark2Cassandra supports Spark 1.5 and above.
 
 #### SBT
 ```scala
-libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "2.1.0-SNAPSHOT"
+libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "2.1.0"
 ```
 
 Or:
 
 ```scala
-libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "2.2.0-SNAPSHOT"
+libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "2.2.0"
 ```
 
 Add the following resolver if needed:
