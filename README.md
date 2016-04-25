@@ -11,6 +11,7 @@ Spark2Cassandra supports Spark 1.5 and above.
 | Spark2Cassandra Version | Cassandra Version |
 | ------------------------| ----------------- |
 | `2.1.X`                 | `2.1.5+`          |
+| `2.2.X`                 | `2.1.X`           |
 
 ## Downloads
 
@@ -19,10 +20,16 @@ Spark2Cassandra supports Spark 1.5 and above.
 libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "2.1.0-SNAPSHOT"
 ```
 
+Or:
+
+```scala
+libraryDependencies += "com.github.jparkie" %% "spark2cassandra" % "2.2.0-SNAPSHOT"
+```
+
 Add the following resolver if needed:
 
 ```scala
-resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/releases"
+resolvers += "Sonatype OSS Releases" at "https://oss.sonatype.org/content/repositories/releases"
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 ```
 
