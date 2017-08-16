@@ -4,7 +4,7 @@ import java.net.InetAddress
 
 import com.datastax.spark.connector.cql.{ AuthConf, CassandraConnector }
 import com.github.jparkie.spark.cassandra.conf.SparkCassServerConf
-import org.apache.spark.Logging
+import grizzled.slf4j.Logging
 
 import scala.collection.mutable
 
@@ -32,12 +32,12 @@ private[cassandra] trait SparkCassSSTableLoaderClientManager extends Serializabl
   ): SparkCassSSTableLoaderClient = {
     val newSession = cassandraConnector.openSession()
 
-    logInfo(s"Created SSTableLoaderClient to the following Cassandra nodes: ${cassandraConnector.hosts}")
+    info(s"Created SSTableLoaderClient to the following Cassandra nodes: ${cassandraConnector.hosts}")
 
     val sparkCassSSTableLoaderClient = new SparkCassSSTableLoaderClient(newSession, sparkCassServerConf)
 
     sys.addShutdownHook {
-      logInfo("Closed Cassandra Session for SSTableLoaderClient.")
+      info("Closed Cassandra Session for SSTableLoaderClient.")
 
       sparkCassSSTableLoaderClient.stop()
     }

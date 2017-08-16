@@ -2,7 +2,7 @@ package com.github.jparkie.spark.cassandra.sql
 
 import com.holdenkarau.spark.testing.SharedSparkContext
 import org.apache.spark.sql.SQLContext
-import org.scalatest.{ MustMatchers, WordSpec }
+import org.scalatest.{MustMatchers, Outcome, WordSpec}
 
 class SparkCassDataFrameFunctionsSpec extends WordSpec with MustMatchers with SharedSparkContext {
   "Package com.github.jparkie.spark.cassandra.sql" must {

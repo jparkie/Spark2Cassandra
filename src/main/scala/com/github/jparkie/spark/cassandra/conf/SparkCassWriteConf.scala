@@ -30,7 +30,7 @@ case class SparkCassWriteConf(
       s"Expected any of ${SparkCassWriteConf.AllowedPartitioners.mkString(", ")}."
   )
 
-  private[cassandra] def getIPartitioner: IPartitioner = {
+  def getIPartitioner: IPartitioner = {
     partitioner match {
       case "org.apache.cassandra.dht.Murmur3Partitioner" =>
         new Murmur3Partitioner()
@@ -41,11 +41,11 @@ case class SparkCassWriteConf(
     }
   }
 
-  private[cassandra] val optionPlaceholders: Seq[String] = Seq(ttl, timestamp).collect {
+  val optionPlaceholders: Seq[String] = Seq(ttl, timestamp).collect {
     case WriteOption(PerRowWriteOptionValue(placeholder)) => placeholder
   }
 
-  private[cassandra] val optionsAsColumns: (String, String) => Seq[ColumnDef] = { (keyspace, table) =>
+  val optionsAsColumns: (String, String) => Seq[ColumnDef] = { (keyspace, table) =>
     def toRegularColDef(opt: WriteOption[_], dataType: DataType) = opt match {
       case WriteOption(PerRowWriteOptionValue(placeholder)) =>
         Some(ColumnDef(placeholder, RegularColumn, ColumnType.fromDriverType(dataType)))
@@ -71,12 +71,12 @@ object SparkCassWriteConf {
   )
 
   val SPARK_CASSANDRA_BULK_WRITE_THROUGHPUT_MB_PER_SEC = SparkCassConfParam[Int](
-    name = "spark.cassandra.bulk.write.throughput_mb_per_sec",
+    name = "spark.cassandra.output.throughput_mb_per_sec",
     default = Int.MaxValue
   )
 
   val SPARK_CASSANDRA_BULK_WRITE_CONNECTIONS_PER_HOST = SparkCassConfParam[Int](
-    name = "spark.cassandra.bulk.write.connection_per_host",
+    name = "spark.cassandra.connection.connections_per_executor_max",
     default = 1
   )
 
