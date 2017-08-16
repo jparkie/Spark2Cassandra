@@ -2,9 +2,9 @@ package com.github.jparkie.spark.cassandra
 
 import java.net.InetAddress
 
+import grizzled.slf4j.Logging
 import org.apache.cassandra.streaming.StreamEvent._
 import org.apache.cassandra.streaming.{ SessionInfo, StreamEvent, StreamEventHandler, StreamState }
-import org.slf4j.Logger
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable
@@ -12,10 +12,8 @@ import scala.collection.mutable
 /**
  * A [[StreamEventHandler]] that logs the current progress of SSTable streaming
  * with completion status, transfer rate, and percentage.
- *
- * @param log A [[Logger]] to write progress.
  */
-class SparkCassStreamEventHandler(log: Logger) extends StreamEventHandler {
+class SparkCassStreamEventHandler() extends StreamEventHandler with Logging {
   class SessionHostMap extends mutable.HashMap[InetAddress, mutable.Set[SessionInfo]]
     with mutable.MultiMap[InetAddress, SessionInfo]
 
@@ -59,14 +57,14 @@ class SparkCassStreamEventHandler(log: Logger) extends StreamEventHandler {
     val currentSessionInfo = sessionPreparedEvent.session
     sessionHostMap.addBinding(currentSessionInfo.peer, currentSessionInfo)
 
-    log.info(s"Session to ${currentSessionInfo.connecting.getHostAddress}.")
+    info(s"Session to ${currentSessionInfo.connecting.getHostAddress}.")
   }
 
   private def handleStreamComplete(sessionCompleteEvent: SessionCompleteEvent): Unit = {
     if (sessionCompleteEvent.success) {
-      log.info(s"Stream to ${sessionCompleteEvent.peer.getHostAddress} successful.")
+      info(s"Stream to ${sessionCompleteEvent.peer.getHostAddress} successful.")
     } else {
-      log.info(s"Stream to ${sessionCompleteEvent.peer.getHostAddress} failed.")
+      info(s"Stream to ${sessionCompleteEvent.peer.getHostAddress} failed.")
     }
   }
 
@@ -143,6 +141,6 @@ class SparkCassStreamEventHandler(log: Logger) extends StreamEventHandler {
 
     currentProgressBuilder.append(s"(Average: $averageRate MB/s)")
 
-    log.info(currentProgressBuilder.toString.trim)
+    info(currentProgressBuilder.toString.trim)
   }
 }

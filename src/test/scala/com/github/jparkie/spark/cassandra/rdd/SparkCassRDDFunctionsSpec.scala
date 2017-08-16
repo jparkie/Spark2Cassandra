@@ -1,9 +1,9 @@
 package com.github.jparkie.spark.cassandra.rdd
 
 import com.holdenkarau.spark.testing.SharedSparkContext
-import org.scalatest.{ MustMatchers, WordSpec }
+import org.scalatest._
 
-class SparkCassRDDFunctionsSpec extends WordSpec with MustMatchers with SharedSparkContext {
+class SparkCassRDDFunctionsSpec extends WordSpec with Matchers with SharedSparkContext {
   "Package com.github.jparkie.spark.cassandra.rdd" must {
     "lift RDD into SparkCassRDDFunctions" in {
       val testRDD = sc.parallelize(1 to 25)

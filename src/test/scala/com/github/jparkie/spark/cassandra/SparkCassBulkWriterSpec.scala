@@ -2,12 +2,12 @@ package com.github.jparkie.spark.cassandra
 
 import com.datastax.driver.core.querybuilder.QueryBuilder
 import com.datastax.spark.connector.AllColumns
-import com.datastax.spark.connector.writer.{ RowWriterFactory, SqlRowWriter }
+import com.datastax.spark.connector.writer.{RowWriterFactory, SqlRowWriter}
 import com.github.jparkie.spark.cassandra.client.SparkCassSSTableLoaderClientManager
-import com.github.jparkie.spark.cassandra.conf.{ SparkCassServerConf, SparkCassWriteConf }
+import com.github.jparkie.spark.cassandra.conf.{SparkCassServerConf, SparkCassWriteConf}
 import com.holdenkarau.spark.testing.SharedSparkContext
-import org.apache.spark.sql.{ Row, SQLContext }
-import org.scalatest.{ MustMatchers, WordSpec }
+import org.apache.spark.sql.{Row, SQLContext}
+import org.scalatest._
 
 import scala.collection.JavaConverters._
 
