@@ -25,10 +25,10 @@ crossScalaVersions := Seq("2.10.6", "2.11.7")
   */
 
 // Versions:
-val SparkVersion                   = "1.5.2"
+val SparkVersion                   = "1.6.3"
 val SparkTestVersion               = "1.5.2_0.3.0"
 val ScalaTestVersion               = "2.2.4"
-val SparkCassandraConnectorVersion = "1.5.0"
+val SparkCassandraConnectorVersion = "1.6.3"
 val CassandraAllVersion            = "2.1.13"
 val CassandraUnitVersion           = "2.1.9.2"
 
